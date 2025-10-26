@@ -1,13 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
   const [fromStation, setFromStation] = useState('');
   const [toStation, setToStation] = useState('');
   const [journeyDate, setJourneyDate] = useState('');
-  const router = useRouter();
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -20,31 +18,9 @@ export default function HomePage() {
       className="min-h-screen bg-cover bg-center text-white"
       style={{ backgroundImage: "url('/train-image.png')" }}
     >
-      <div className="min-h-screen  bg-opacity-50">
-        <header className="relative p-4 flex items-center justify-between">
-          {/* Left Side */}
+      <div className="min-h-screen bg-opacity-50">
+        <header className="p-4">
           <h1 className="text-4xl font-bold">Train-Ticket</h1>
-
-          {/* Centered Motto */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <p className="text-lg whitespace-nowrap">Your one-stop solution for train travel.</p>
-          </div>
-
-          {/* Right Side Buttons */}
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => router.push('/login')}
-              className="px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Login
-            </button>
-            <button
-              onClick={() => router.push('/register')}
-              className="px-4 py-2 font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Register
-            </button>
-          </div>
         </header>
 
         <main className="flex flex-col items-center justify-center flex-grow px-4 text-center" style={{ minHeight: 'calc(100vh - 150px)' }}>
