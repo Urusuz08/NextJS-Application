@@ -40,7 +40,12 @@ export default function RegisterUser() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="bg-center bg-no-repeat flex items-center justify-start min-h-screen bg-gray-100"
+    
+      style={{ backgroundImage: "url('/pj.png')",
+      backgroundSize: '100% 100%',
+    }}
+    >
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center text-gray-900">Create an Admin Account</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -157,7 +162,15 @@ export default function RegisterUser() {
             />
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <div>
+          <div className ="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => router.replace('/login?role=admin')}
+              className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Already have an account? Login
+            </button>
+          
             <button
               type="submit"
 

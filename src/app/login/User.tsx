@@ -2,27 +2,24 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import LoginPage from "./page";
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function User() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  // IMPROVEMENT: State to manage error messages for the user
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError(null); // Reset error on new submission
+    setError(null);
 
     try {
-      // FIX: Changed to http unless you have a specific https setup for localhost
-      const response = await fetch('https://localhost:8081/api/account/user/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ 
-          'type':'USER',
-          'status':false,
+        body: JSON.stringify({   
           'username': username,
           'password': password,
         }),
@@ -30,36 +27,27 @@ export default function User() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        // IMPROVEMENT: Set a user-friendly error message
         setError(errorData.message || 'Invalid username or password.');
-        // FIX: Corrected console log message
         console.error('User login failed:', response.statusText);
-
-        setUsername(''); // Clear username field
-        setPassword(''); // Clear password field
-        return; // Stop execution if login fails
+        setUsername('');
+        setPassword('');
+        return;
       }
 
-      const responseData = await response.json();
-      // FIX: Corrected console log message
-      console.log('User login successful: ', JSON.stringify(responseData));
+      const { user } = await response.json();
+      login(user);
 
-      // Consider storing a token from responseData (e.g., in session/local storage or context)
-      
-      router.push('/home');
+      if (user.role === 'ADMIN') {
+        router.push('/profile/admin');
+      } else {
+        router.push('/profile/user');
+      }
       
     } catch (err) {
-      // FIX: Corrected console log message and set user-facing error
       console.error('Error during user login:', err);
       setError('An unexpected error occurred. Please try again.');
     }
   };
-
-  const [role, setRole] = useState<'login' | null>(null);
-
-  if (role === 'login') {
-    return <LoginPage />;
-  }
   
   return (
     <div
@@ -67,9 +55,8 @@ export default function User() {
       style={{ backgroundImage: "url('/train-image.png')" }}
     >
         <div className="w-full max-w-sm p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-900">User Login</h2>
+        <h2 className="text-2xl font-bold text-center text-gray-900">Login</h2>
         <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* IMPROVEMENT: Display error message to the user */}
           {error && (
             <div className="p-3 text-sm text-red-700 bg-red-100 border border-red-400 rounded-md">
               {error}
@@ -111,20 +98,33 @@ export default function User() {
               />
             </div>
           </div>
-          
-          <div className="flex items-center space-x-4">
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <input
+                id="remember-me"
+                name="remember-me"
+                type="checkbox"
+                className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+              />
+              <label htmlFor="remember-me" className="block ml-2 text-sm text-gray-900">
+                Remember me
+              </label>
+            </div>
+
+            <div className="text-sm">
+              <a href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Don&apos;t have an account?
+              </a>
+            </div>
+          </div>
+
+          <div>
             <button
               type="submit"
               className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
-              Login
-            </button>
-            <button
-              onClick={() => setRole('login')}
-              type="button" // Set type to "button" to prevent form submission
-              className="flex justify-center w-full px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Back
+              Sign in
             </button>
           </div>
         </form>
