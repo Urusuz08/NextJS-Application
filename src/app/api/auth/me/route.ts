@@ -1,8 +1,6 @@
 
 import { NextResponse, NextRequest } from 'next/server';
-import { jwtVerify } from 'jose';
-
-const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+import { verifyTokenWithBackend } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   const token = req.cookies.get('authToken')?.value;
@@ -12,13 +10,12 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const { payload } = await jwtVerify(token, secret);
-    // You might want to fetch fresh user data from your DB here
-    const user = {
-      id: payload.id,
-      username: payload.username,
-      role: payload.role,
-    };
+    const user = await verifyTokenWithBackend(token);
+
+    if (!user) {
+      return NextResponse.json({ user: null }, { status: 401 });
+    }
+    
     return NextResponse.json({ user });
   } catch (err) {
     console.error('"Me" API Error:', err);

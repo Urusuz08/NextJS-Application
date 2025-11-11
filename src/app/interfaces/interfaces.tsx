@@ -50,7 +50,7 @@ export interface ActiveFilters {
  * Represents a user of the application.
  */
 export interface User {
-  id: string;
+  name: string;
   username: string;
   role: 'ADMIN' | 'USER';
 }
