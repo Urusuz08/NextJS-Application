@@ -26,7 +26,7 @@ export default function SearchForm({ onSearch }: SearchFormProps) {
         placeholder="From"
         value={from}
         onChange={(e) => setFrom(e.target.value)}
-        className="p-2 rounded-md"
+        className="p-2 rounded-md text-black"
         required
       />
       <input
@@ -34,14 +34,14 @@ export default function SearchForm({ onSearch }: SearchFormProps) {
         placeholder="To"
         value={to}
         onChange={(e) => setTo(e.target.value)}
-        className="p-2 rounded-md"
+        className="p-2 rounded-md text-black"
         required
       />
       <input
         type="date"
         value={date}
         onChange={(e) => setDate(e.target.value)}
-        className="p-2 rounded-md"
+        className="p-2 rounded-md text-black"
         required
       />
       <button

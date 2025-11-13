@@ -31,7 +31,7 @@ export default function FilterSidebar({ options, activeFilters, onFilterChange }
   };
 
   return (
-    <div className="bg-blue-100 p-4 rounded-lg shadow-md">
+    <div className="bg-blue-100 p-4 rounded-lg shadow-md text-gray-800">
       <h3 className="text-xl font-bold mb-4">Filters</h3>
       
       {/* --- TODO: Add more filter sections --- */}

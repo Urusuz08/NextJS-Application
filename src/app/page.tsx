@@ -1,17 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { Train, ActiveFilters } from './interfaces/interfaces';
+import FilterSidebar from './components/filter';
+import TrainResultsList from './components/trainInfo';
 
 
-interface Train{
-  trainId: string;
-  name: string;
-  type: string;
-  sourceStation: string;
-  destinationStation : string;
-}
 interface routeDetails{
 
   OnFormSubmit : (responseData:Train[]) => void;
@@ -38,13 +32,14 @@ const RouteForm:React.FC<routeDetails> = ({OnFormSubmit}) => {
       const baseurl='https://localhost:8081/api/trains/route';
       searchParams.append('from', fromStation);
       searchParams.append('to', toStation);
+      searchParams.append('date', journeyDate);
       
       const url = `${baseurl}?${searchParams.toString()}`;
 
 
       const response = await fetch(url,{
         method :'GET',
-        headers: {'Content-Type':'application/json'},
+        
       }) 
 
       if(!response.ok){
@@ -54,6 +49,7 @@ const RouteForm:React.FC<routeDetails> = ({OnFormSubmit}) => {
 
       const rD = await response.json();
       // console.log('Train search successful:', JSON.stringify(responseData));
+      console.log('Train search successful:', JSON.stringify(rD));
       OnFormSubmit(rD);
       
 
@@ -108,18 +104,51 @@ const RouteForm:React.FC<routeDetails> = ({OnFormSubmit}) => {
 
 export default function HomePage() {
   const [trainData, setTrainData] = useState<Train[] | null>(null);
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
+    trainTypes: new Set(),
+  });
 
-  const handleFormSubmit = useCallback((data:Train[]) => {
-     console.log('Received train data in HomePage:', data);
-     setTrainData(data);
-   }, []);
+  const handleFormSubmit = useCallback((data: Train[]) => {
+    console.log('Received train data in HomePage:', data);
+    setTrainData(data);
+  }, []);
+
+  const handleFilterChange = useCallback((newFilters: ActiveFilters) => {
+    setActiveFilters(newFilters);
+  }, []);
+
+  // Memoize filter options so they don't recalculate on every render
+  const filterOptions = useMemo(() => {
+    if (!trainData) {
+      return { trainTypes: [] };
+    }
+    // Get unique train types from the search results
+    const trainTypes = [...new Set(trainData.map(train => train.type))];
+    return { trainTypes };
+  }, [trainData]);
+
+  // Memoize the filtered results
+  const filteredTrains = useMemo(() => {
+    if (!trainData) {
+      return [];
+    }
+    // Apply filters
+    return trainData.filter(train => {
+      // If no type filters are selected, show all trains
+      if (activeFilters.trainTypes.size === 0) {
+        return true;
+      }
+      // Otherwise, only show trains whose type is in the active filter set
+      return activeFilters.trainTypes.has(train.type);
+    });
+  }, [trainData, activeFilters]);
 
   return (
     <div
       className="min-h-screen bg-cover bg-center text-white"
       style={{ backgroundImage: "url('/train-image.png')" }}
     >
-      <div className="min-h-screen bg-opacity-50">
+      <div className="min-h-screen bg-black bg-opacity-50">
         <main className="flex flex-col items-center justify-center px-4 text-center" style={{ minHeight: 'calc(100vh - 150px)' }}>
           <h2 className="text-5xl font-extrabold mb-4">Welcome to Your Journey</h2>
           <p className="text-xl mb-8">Find and book your train tickets with ease.</p>
@@ -127,34 +156,20 @@ export default function HomePage() {
           <RouteForm OnFormSubmit={handleFormSubmit} />
 
           {trainData && (
-            <div className="mt-8 w-full max-w-4xl bg-white bg-opacity-20 backdrop-blur-md rounded-lg shadow-lg p-6 text-black">
-              <h3 className="text-2xl font-bold mb-4">Available Trains:</h3>
-              
-                <div className="overflow-x-auto">
-                <table className="min-w-full bg-white bg-opacity-80 rounded-lg">
-                  <thead>
-                    <tr key={"h-1"} className="border-b border-gray-300">
-                      <th>Train Number</th>
-                      <th>Train Name</th>
-                      <th>Type</th>
-                      <th>From</th>
-                      <th>To</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  {trainData.map((train:Train,index) => (
-                    <tr key={train.trainId} className="border-b border-gray-200">
-                      <td className="p-3">{train.trainId}</td>
-                      <td className="p-3">{train.name}</td>
-                      <td className="p-3">{train.type}</td>
-                      <td className="p-3">{train.sourceStation}</td>
-                      <td className="p-3">{train.destinationStation}</td>
-                    </tr>
-                  ))}
-                  </tbody>
-                </table>
-                </div>
-              
+            <div className="mt-8 w-full max-w-7xl grid grid-cols-1 md:grid-cols-4 gap-6 px-4">
+              {/* Filter Sidebar (Left Column) */}
+              <div className="md:col-span-1">
+                <FilterSidebar
+                  options={filterOptions}
+                  activeFilters={activeFilters}
+                  onFilterChange={handleFilterChange}
+                />
+              </div>
+
+              {/* Train Results (Right Column) */}
+              <div className="md:col-span-3">
+                <TrainResultsList trains={filteredTrains} />
+              </div>
             </div>
           )}
         </main>

@@ -10,16 +10,17 @@ interface TrainDetailCardProps {
 
 export default function TrainDetailCard({ train }: TrainDetailCardProps) {
   // This card manages its own state for the selected class.
-  // Default to the first class in the list.
-  const [selectedClass, setSelectedClass] = useState(train.classes[0]?.className || '');
+  // Default to the first class in the list, but only if it exists.
+  const [selectedClass, setSelectedClass] = useState(train.classes?.[0]?.className || '');
 
   // Find the full data object for the currently selected class
   const currentClassData = useMemo(() => {
-    return train.classes.find(c => c.className === selectedClass);
+    // Ensure classes exist before trying to find one
+    return train.classes?.find(c => c.className === selectedClass);
   }, [selectedClass, train.classes]);
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
+    <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200 text-black">
       
       {/* Card Header */}
       <div className="flex justify-between items-center mb-4">
@@ -47,47 +48,55 @@ export default function TrainDetailCard({ train }: TrainDetailCardProps) {
         <span className="font-semibold">{train.destinationStation}</span>
       </div>
 
-      {/* Availability Section */}
-      <div>
-        {/* Class Tabs */}
-        <div className="flex border-b mb-4">
-          {train.classes.map(cls => (
-            <button
-              key={cls.className}
-              onClick={() => setSelectedClass(cls.className)}
-              className={`py-2 px-4 font-semibold ${
-                selectedClass === cls.className
-                  ? 'border-b-2 border-blue-500 text-blue-500'
-                  : 'text-gray-500'
-              }`}
-            >
-              {cls.className}
-            </button>
-          ))}
-        </div>
-
-        {/* Date Boxes */}
-        <div className="flex gap-4 overflow-x-auto pb-2">
-          {currentClassData?.availability.map(day => (
-            <div key={day.date} className="border border-gray-300 rounded-md p-3 text-center min-w-[120px]">
-              <div className="text-sm font-semibold">{day.date}</div>
-              <div className="text-green-600 font-bold">{day.status}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div className="flex justify-between items-center mt-6">
+      {/* Availability Section - Conditionally render if classes exist */}
+      {train.classes && train.classes.length > 0 ? (
         <div>
-          <span className="text-xl font-bold">
-            Fare: &#8377; {currentClassData?.fare}
-          </span>
+          {/* Class Tabs */}
+          <div className="flex border-b mb-4">
+            {train.classes.map(cls => (
+              <button
+                key={cls.className}
+                onClick={() => setSelectedClass(cls.className)}
+                className={`py-2 px-4 font-semibold ${
+                  selectedClass === cls.className
+                    ? 'border-b-2 border-blue-500 text-blue-500'
+                    : 'text-gray-500'
+                }`}
+              >
+                {cls.className}
+              </button>
+            ))}
+          </div>
+
+          {/* Date Boxes */}
+          <div className="flex gap-4 overflow-x-auto pb-2">
+            {currentClassData?.availability.map(day => (
+              <div key={day.date} className="border border-gray-300 rounded-md p-3 text-center min-w-[120px]">
+                <div className="text-sm font-semibold">{day.date}</div>
+                <div className="text-green-600 font-bold">{day.status}</div>
+              </div>
+            ))}
+          </div>
         </div>
-        <button className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600">
-          Book Now
-        </button>
-      </div>
+      ) : (
+        <div className="text-center text-gray-500 py-4">
+          No seating class information available for this train.
+        </div>
+      )}
+
+      {/* Footer - Conditionally render if a class is selected */}
+      {currentClassData ? (
+        <div className="flex justify-between items-center mt-6">
+          <div>
+            <span className="text-xl font-bold">
+              Fare: &#8377; {currentClassData.fare}
+            </span>
+          </div>
+          <button className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600">
+            Book Now
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

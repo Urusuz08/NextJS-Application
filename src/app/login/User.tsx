@@ -57,10 +57,10 @@ export default function User() {
   
   return (
     <div
-      className="flex items-center justify-center min-h-screen bg-cover bg-center text-white"
+      className="flex items-center justify-center min-h-screen bg-cover bg-center"
       style={{ backgroundImage: "url('/train-image.png')" }}
     >
-        <div className="w-full max-w-sm p-8 space-y-6 bg-white rounded-lg shadow-md">
+        <div className="w-full max-w-sm p-8 space-y-6 bg-white bg-opacity-90 backdrop-blur-sm rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center text-gray-900">Login</h2>
         <form className="space-y-6" onSubmit={handleSubmit}>
           {error && (
