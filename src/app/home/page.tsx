@@ -19,11 +19,7 @@ export default function HomePage() {
       style={{ backgroundImage: "url('/train-image.png')" }}
     >
       <div className="min-h-screen bg-opacity-50">
-        <header className="p-4">
-          <h1 className="text-4xl font-bold">Train-Ticket</h1>
-        </header>
-
-        <main className="flex flex-col items-center justify-center flex-grow px-4 text-center" style={{ minHeight: 'calc(100vh - 150px)' }}>
+        <main className="flex flex-col items-center justify-center px-4 text-center" style={{ minHeight: 'calc(100vh - 150px)' }}>
           <h2 className="text-5xl font-extrabold mb-4">Welcome to Your Journey</h2>
           <p className="text-xl mb-8">Find and book your train tickets with ease.</p>
 
@@ -34,7 +30,7 @@ export default function HomePage() {
                 placeholder="From Station"
                 value={fromStation}
                 onChange={(e) => setFromStation(e.target.value)}
-                className="w-full px-4 py-3 text-black placeholder-gray-500 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 text-black placeholder-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
               <input
@@ -42,7 +38,7 @@ export default function HomePage() {
                 placeholder="To Station"
                 value={toStation}
                 onChange={(e) => setToStation(e.target.value)}
-                className="w-full px-4 py-3 text-black placeholder-gray-500 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 text-black placeholder-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
               <input
@@ -61,10 +57,6 @@ export default function HomePage() {
             </form>
           </div>
         </main>
-
-        <footer className="p-4 text-center">
-          <p>&copy; 2025 Train-Ticket. All rights reserved.</p>
-        </footer>
       </div>
     </div>
   );
