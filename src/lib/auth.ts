@@ -8,7 +8,7 @@ import type { User } from '@/app/interfaces/interfaces';
 export async function verifyTokenWithBackend(token: string): Promise<{ user: User } | null> {
   try {
     // This is the new endpoint you will need to create in your Spring Boot backend
-    const backendResponse = await fetch('https://localhost:8081/api/account/authenticate', {
+    const backendResponse = await fetch('https://localhost:8081/api/account/user/authenticate', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
