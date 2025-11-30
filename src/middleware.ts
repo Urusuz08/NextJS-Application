@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   
   // Define public paths that do not require authentication
-  const publicPaths = ['/login', '/register'];
+  const publicPaths = ['/login', '/register',''];
   const isPublicPath = publicPaths.includes(pathname);
   const isApiAuthRoute = pathname.startsWith('/api/auth');
 
@@ -28,14 +28,14 @@ export async function middleware(req: NextRequest) {
     const responseData = await verifyTokenWithBackend(token);
 
     // --- DEBUGGING: Log the received user object ---
-    console.log('User object received in middleware:', JSON.stringify(responseData, null, 2));
+    // console.log('User object received in middleware:', JSON.stringify(responseData, null, 2));
 
     // Extract the nested user object
     const user = responseData?.user;
 
     // Defensive check: ensure user and user.role exist
     if (!user || typeof user.role !== 'string') {
-      console.error('Middleware error: User object is invalid or missing a role.');
+      // console.error('Middleware error: User object is invalid or missing a role.');
       throw new Error('Invalid user data from backend');
     }
 
@@ -73,7 +73,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - public images (svg, png, jpg, jpeg, gif, webp)
      */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
